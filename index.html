@@ -4,6 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>جيسيكا 💜</title>
+<script>
+  // Force scroll to top — works on iOS Safari too
+  // Clear any hash that might cause scroll offset
+  if(window.location.hash){
+    try{history.replaceState(null,null,' ');}catch(e){}
+  }
+  if(history.scrollRestoration){history.scrollRestoration='manual';}
+  document.addEventListener('DOMContentLoaded',function(){
+    document.documentElement.scrollTop=0;
+    document.body.scrollTop=0;
+    window.scrollTo(0,0);
+  });
+  window.addEventListener('load',function(){
+    document.documentElement.scrollTop=0;
+    document.body.scrollTop=0;
+    window.scrollTo(0,0);
+    setTimeout(function(){window.scrollTo(0,0);},50);
+    setTimeout(function(){window.scrollTo(0,0);},200);
+  });
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -52,22 +72,37 @@ section{position:relative;z-index:2;min-height:100vh;display:flex;align-items:ce
 .sec-s{font-size:.76rem;color:rgba(245,213,224,.32);text-align:center;letter-spacing:.1em;margin-bottom:2.2rem}
 .yr-lbl{font-family:"Amiri",serif;font-size:1.7rem;color:rgba(212,168,87,.5);text-align:center;margin:2rem 0 .8rem;letter-spacing:.1em}
 
-/* Zigzag path */
+/* Vertical path line */
 .zpath{position:relative;padding:.5rem 0}
-.zpath::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;background:linear-gradient(180deg,transparent,rgba(196,84,122,.35) 10%,rgba(196,84,122,.35) 90%,transparent);transform:translateX(-50%)}
+.zpath::before{content:"";position:absolute;top:0;bottom:0;right:50%;width:2px;background:linear-gradient(180deg,transparent,rgba(196,84,122,.35) 8%,rgba(196,84,122,.35) 92%,transparent);transform:translateX(1px)}
 
-.znode{display:grid;grid-template-columns:1fr 48px 1fr;align-items:start;margin-bottom:2.8rem;opacity:0;transition:opacity .55s,transform .55s}
+/* Each node: always dot in middle col, card alternates left/right */
+.znode{
+  display:grid;
+  grid-template-columns:1fr 48px 1fr;
+  align-items:start;
+  margin-bottom:2.8rem;
+  opacity:0;
+  transition:opacity .55s,transform .55s;
+}
 .znode.on{opacity:1!important;transform:none!important}
 .znode.zleft{transform:translateX(-30px)}
 .znode.zright{transform:translateX(30px)}
 
-.znode-dot-col{display:flex;flex-direction:column;align-items:center;padding-top:16px}
+/* Dot always in middle column */
+.znode-dot-col{grid-column:2;display:flex;flex-direction:column;align-items:center;padding-top:14px}
 .znode-dot{width:16px;height:16px;border-radius:50%;border:2.5px solid var(--rose);background:var(--bg);box-shadow:0 0 10px rgba(196,84,122,.45);transition:all .3s;position:relative;z-index:2}
 .znode-dot.gd{border-color:var(--gold);box-shadow:0 0 14px rgba(212,168,87,.55)}
 .znode:hover .znode-dot{background:var(--rose);transform:scale(1.3)}
 .znode:hover .znode-dot.gd{background:var(--gold)}
 
-.zcard{background:rgba(255,255,255,.03);border:1px solid rgba(212,168,87,.1);border-radius:16px;padding:1rem 1.1rem;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+/* Card position by direction */
+.znode.zright .zcard{grid-column:3;grid-row:1}
+.znode.zleft  .zcard{grid-column:1;grid-row:1}
+.zempty{grid-column:auto}
+
+/* Card styles */
+.zcard{background:rgba(255,255,255,.03);border:1px solid rgba(212,168,87,.1);border-radius:16px;padding:1rem 1.1rem;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;min-width:0}
 .zcard::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(196,84,122,.07),transparent);opacity:0;transition:opacity .28s}
 .zcard:hover{transform:translateY(-4px) scale(1.02);border-color:rgba(196,84,122,.3);box-shadow:0 14px 36px rgba(196,84,122,.11)}
 .zcard:hover::before,.zcard.open::before{opacity:1}
@@ -81,15 +116,26 @@ section{position:relative;z-index:2;min-height:100vh;display:flex;align-items:ce
 .zcard.open .zstory{display:block;animation:fadeUp .4s both}
 .ztap{font-size:.66rem;color:rgba(196,84,122,.48);margin-top:.35rem}
 .zcard.open .ztap{display:none}
-.zempty{visibility:hidden}
 .map-end{text-align:center;margin-top:1.2rem;padding:1.4rem;border:1px dashed rgba(212,168,87,.18);border-radius:14px;font-family:"Amiri",serif;font-size:1rem;color:rgba(212,168,87,.55);line-height:2}
 
-@media(max-width:560px){
-  .zpath::before{left:22px;transform:none}
-  .znode{grid-template-columns:44px 1fr!important;direction:ltr}
-  .znode.zleft .zempty,.znode.zright .zempty{display:none}
-  .znode.zleft,.znode.zright{transform:translateX(20px)}
-  .znode-dot-col{padding-top:14px}
+/* MOBILE: simple left-aligned vertical list */
+@media(max-width:640px){
+  .zpath::before{right:auto;left:16px;transform:none}
+  .znode,.znode.zleft,.znode.zright{
+    display:grid!important;
+    grid-template-columns:36px 1fr!important;
+    transform:none!important;
+    margin-bottom:1.8rem;
+  }
+  .zempty{display:none!important}
+  .znode-dot-col,.znode.zleft .znode-dot-col,.znode.zright .znode-dot-col{
+    grid-column:1!important;grid-row:1!important;
+    width:36px;padding-top:10px;
+  }
+  .znode.zright .zcard,.znode.zleft .zcard,.zcard{
+    grid-column:2!important;grid-row:1!important;
+    max-width:100%!important;
+  }
 }
 
 /* REASONS */
@@ -142,6 +188,7 @@ section{position:relative;z-index:2;min-height:100vh;display:flex;align-items:ce
 </style>
 </head>
 <body>
+<div id="top" style="position:absolute;top:0;left:0;width:1px;height:1px;opacity:0"></div>
 <canvas id="stars"></canvas>
 
 <div class="dots" id="dotsNav">
@@ -335,8 +382,7 @@ function buildMap(data, cid){
     var d=data[i];
     var n=document.createElement("div");
     n.className="znode z"+d.sd;
-    var leftHtml, rightHtml, card;
-    card='<div class="zcard'+(d.gd?" gd":"")+'">'+
+    var card='<div class="zcard'+(d.gd?" gd":"")+'">'+
       '<span class="zem">'+d.em+'</span>'+
       '<div class="zdate">'+d.dt+'</div>'+
       '<div class="ztitle">'+d.ti+'</div>'+
@@ -345,6 +391,7 @@ function buildMap(data, cid){
     '</div>';
     var center='<div class="znode-dot-col"><div class="znode-dot'+(d.gd?" gd":"")+'"></div></div>';
     var empty='<div class="zempty"></div>';
+    /* Always: empty | dot | card for right; card | dot | empty for left */
     if(d.sd==="right"){
       n.innerHTML=empty+center+card;
     } else {
